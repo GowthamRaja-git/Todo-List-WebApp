@@ -12,12 +12,16 @@
 
 Project Title: To-Do List Web Application with CRUD and Task Assignment Features
 
-Project Description:
+## Project Description
 
-This project is a dynamic To-Do List web application designed to streamline task management through a user-friendly interface and robust functionality. The application supports full CRUD (Create, Read, Update, Delete) operations, allowing users to easily manage their tasks. Additionally, it features a "Done" functionality, where completed tasks are visually marked by striking through the text.
+This web application is a comprehensive task management tool designed to enhance productivity and collaboration. Built using HTML5, CSS3, and JavaScript for the frontend, Python and Flask for the backend, and MySQL for the database, it offers robust features for creating, managing, and delegating tasks.
 
-A standout feature of this application is the task assignment functionality. Each task created includes an "Assign" button, which, when clicked, opens a dialogue box prompting the user to enter an email ID. The specified task is then sent as an email to the provided address, enabling easy delegation of tasks to others.
+Core functionalities include:
 
-The application’s front-end is built using HTML5, CSS3, and JavaScript, providing a responsive and intuitive user experience. The back-end is powered by Python and Flask, ensuring efficient data processing and handling. MySQL is used as the database management system, ensuring reliable data storage and retrieval.
+* **CRUD Operations:** Users can create, read, update, and delete tasks efficiently.
+* **Task Completion:** Tasks can be marked as completed with a simple strikethrough.
+* **Task Assignment:** A dedicated assign button allows users to easily delegate tasks to specific individuals by entering their email addresses. The system automatically sends a notification email containing task details to the designated recipient.
 
-This project demonstrates strong skills in full-stack web development, combining both front-end and back-end technologies to create a functional and efficient task management solution.
+This application provides a user-friendly interface for individuals or teams to effectively organize and prioritize their workloads, ensuring timely completion of tasks and improved overall productivity.
+ 
+**Key Technologies:** HTML5, CSS3, JavaScript, Python, Flask, MySQL
