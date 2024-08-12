@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Todo List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-image: url(https://images.unsplash.com/photo-1662027008658-b615840c7deb?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NjR8fHRvZG8lMjBsaXN0fGVufDB8fDB8fHww);
+            
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        span {
+            flex-grow: 1;
+        }
+        span[style="text-decoration: line-through"] {
+            color: #bdc3c7;
+        }
+        a, button {
+            text-decoration: none;
+            color: #3498db;
+            margin-left: 10px;
+            padding: 5px 10px;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        a:hover, button:hover {
+            background-color: #3498db;
+            color: #fff;
+        }
+        form {
+            text-align: center;
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="date"], input[type="time"] {
+            padding: 10px;
+            width: 25%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #2c3e50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button[type="submit"]:hover {
+            background-color: #34495e;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Todo List</h1> 
+    <form id="add-form" style="display: flex; flex-direction: column; max-width: 800px; margin: 20px auto; padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); gap: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+            <label for="todo" style="font-weight: bold; color: #333; min-width: 100px;">Task</label>
+            <label for="deadline_date" style="font-weight: bold; color: #333; min-width: 150px;">Deadline Date</label>
+            <label for="deadline_time" style="font-weight: bold; color: #333; min-width: 150px;">Deadline Time</label>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+            <input type="text" id="todo" name="todo" placeholder="Enter Task" required style="flex: 1; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; outline: none; transition: border-color 0.3s ease-in-out;">
+            <input type="date" id="deadline_date" name="deadline_date"  style="flex: 1; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; outline: none; transition: border-color 0.3s ease-in-out;">
+            <input type="time" id="deadline_time" name="deadline_time"  style="flex: 1; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; outline: none; transition: border-color 0.3s ease-in-out;">
+        </div>
+        <button type="submit" style="margin-top: 20px; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; transition: background-color 0.3s ease-in-out;">
+            Add
+        </button>
+    </form>
+    
+    
+    
+    <!-- <form id="add-form">
+        <input type="text" name="todo" placeholder="Enter Task" required>
+        <input type="date" name="deadline_date" placeholder="Deadline Date" required>
+        <input type="time" name="deadline_time" placeholder="Deadline Time" required>
+        <button type="submit">Add</button>
+    </form> -->
+    <ul id="todo-list">
+    
+    </ul>
+
+    <script>
+       let editMode = false;
+    let currentEditId = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchTodos();
+
+        // Add new or edit existing todo
+        document.getElementById('add-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const task = this.elements['todo'].value;
+            const deadline_date = this.elements['deadline_date'].value;
+            const deadline_time = this.elements['deadline_time'].value;
+
+            if (editMode && currentEditId !== null) {
+                // Edit existing task
+                fetch(`/api/todos/${currentEditId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ task, deadline_date, deadline_time })
+                })
+                .then(() => {
+                    fetchTodos();
+                    this.reset();
+                    editMode = false;
+                    currentEditId = null;
+                    document.querySelector('button[type="submit"]').textContent = 'Add';
+                });
+            } else {
+                // Add new task
+                fetch('/api/todos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ task, deadline_date, deadline_time })
+                })
+                .then(() => {
+                    fetchTodos();
+                    this.reset();
+                });
+            }
+        });
+    });
+
+    // Fetch and display todos
+    function fetchTodos() {
+        fetch('/api/todos')
+            .then(response => response.json())
+            .then(data => {
+                const todoList = document.getElementById('todo-list');
+                todoList.innerHTML = '';
+                data.forEach(todo => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span ${todo.done ? 'style="text-decoration: line-through"' : ''}>${todo.task}</span>
+                        ${todo.deadline_date ? `<small>Deadline: ${todo.deadline_date} ${todo.deadline_time || ''}</small>` : ''}
+                        <button onclick="toggleDone(event, ${todo.id})">${todo.done ? 'Undo' : 'Done'}</button>
+                        <button onclick="editTask(${todo.id}, '${todo.task}', '${todo.deadline_date}', '${todo.deadline_time}')">Edit</button>
+                        <button onclick="deleteTask(${todo.id})">Delete</button>
+                        <button onclick="assignTask(${todo.id})">Assign</button>
+                    `;
+                    todoList.appendChild(li);
+                });
+            });
+    }
+
+    // Toggle done state
+    function toggleDone(event, id) {
+        const todo = { done: event.target.textContent === 'Done' };
+        fetch(`/api/todos/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(todo)
+        })
+        .then(() => fetchTodos());
+    }
+
+    // Edit task
+    function editTask(id, task, deadline_date, deadline_time) {
+        document.getElementById('todo').value = task;
+        document.getElementById('deadline_date').value = deadline_date;
+        document.getElementById('deadline_time').value = deadline_time;
+        editMode = true;
+        currentEditId = id;
+        document.querySelector('button[type="submit"]').textContent = 'Update';
+    }
+
+    // Delete task
+    function deleteTask(id) {
+        fetch(`/api/todos/${id}`, {
+            method: 'DELETE'
+        })
+        .then(() => fetchTodos());
+    }
+
+    // Assign task
+    function assignTask(id) {
+        const email = prompt('Enter email to assign this task:');
+        if (email) {
+            fetch(`/api/todos/${id}/assign`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email })
+            })
+            .then(() => alert('Task assigned successfully!'))
+            .catch(err => alert('Failed to assign task'));
+        }
+    }
+    </script>
+</body>
+</html>
