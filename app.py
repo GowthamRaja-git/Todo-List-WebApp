@@ -7,12 +7,15 @@ from dotenv import load_dotenv
 app = Flask(__name__)
 
 # Database configuration for MySQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234567890@localhost/gow'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://your_username:your_password@localhost/db_you wanna use'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 load_dotenv() 
+# I have created a .env file where I have stored my user ID and passcode which I can't expose directly in the Python file,
+#from which I import both of them using the load_dotenv() function.
 
+    
 # Mail configuration using environment variables for security
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
@@ -22,6 +25,9 @@ app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL') == 'True'
 mail = Mail(app)
+
+# To Use the Assign functionality in Your project, You have to create a temporary password in the Google app password,
+#You have to use that password with your specified email to assign tasks, Due to Google Privacy Issues.
 
 # Define the Todo model
 class Todo(db.Model):
